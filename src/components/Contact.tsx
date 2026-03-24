@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './Contact.module.css';
 import { portfolioData } from '../data';
-import { Mail, Linkedin } from 'lucide-react';
+import { Mail, Linkedin, Github } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const Contact: React.FC = () => {
@@ -44,6 +44,11 @@ const Contact: React.FC = () => {
                 <a href={portfolioData.personal.contact.linkedin} target="_blank" rel="noopener noreferrer" className={styles.contactLink}>
                     <Linkedin size={20} />
                     <span>LinkedIn Profile</span>
+                </a>
+
+                <a href={portfolioData.personal.contact.github} target="_blank" rel="noopener noreferrer" className={styles.contactLink}>
+                    <Github size={20} />
+                    <span>GitHub Profile</span>
                 </a>
             </motion.div>
         </section>

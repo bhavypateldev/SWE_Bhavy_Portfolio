@@ -6,5 +6,12 @@
             "source": "/(.*)",
             "destination": "/index.html"
         }
+    ],
+    "redirects": [
+        {
+            "source": "/github",
+            "destination": "https://github.com/bhavy2312",
+            "permanent": false
+        }
     ]
 }

@@ -11,7 +11,8 @@ export const portfolioData = {
         about: "I am a Computer Science student passionate about the intersection of Software Engineering and Cybersecurity. My expertise lies in building secure full-stack applications, vulnerability assessment, and algorithm optimization. I strive to develop robust software that stands up to modern security challenges.",
         contact: {
             email: "bhavypatel1223@gmail.com", // TODO: Update with your email
-            linkedin: "https://www.linkedin.com/in/bhavy-patel23/" // TODO: Update with your LinkedIn URL
+            linkedin: "https://www.linkedin.com/in/bhavy-patel23/", // TODO: Update with your LinkedIn URL
+            github: "https://github.com/bhavy2312"
         }
     },
     links: [
