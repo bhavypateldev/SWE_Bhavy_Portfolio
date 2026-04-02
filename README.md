@@ -25,7 +25,6 @@ A clean, minimalist portfolio website built with React, TypeScript, and Vite.
     ```bash
     npm run dev
     ```
-
 ## Customization
 
 -   **Content**: Edit `src/components/Hero.tsx` to change the name, bio, and links.
@@ -33,7 +32,6 @@ A clean, minimalist portfolio website built with React, TypeScript, and Vite.
 -   **Styles**: 
     -   Global colors and fonts are in `src/index.css`.
     -   Component-specific styles are in `src/components/*.module.css`.
-
 ## Technologies
 
 -   [Vite](https://vitejs.dev/)
