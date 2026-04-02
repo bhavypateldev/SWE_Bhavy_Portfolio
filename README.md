@@ -7,12 +7,6 @@ To visit portfolio:
 
 A clean, minimalist portfolio website built with React, TypeScript, and Vite.
 
-## Features
-
-- **Clean UI**: Minimalist design with a focus on typography.
-- **Animations**: Smooth entrance animations using Framer Motion.
-- **Responsive**: Adapts to different screen sizes.
-- **Icons**: Uses Lucide React for consistent iconography.
 
 ## Getting Started
 
