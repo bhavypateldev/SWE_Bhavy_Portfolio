@@ -8,6 +8,7 @@ export const useTheme = () => {
         if (savedTheme) {
             return savedTheme as Theme;
         }
+
         return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     });
 

@@ -12,7 +12,7 @@ export const portfolioData = {
         contact: {
             email: "bhavypatel1223@gmail.com", // TODO: Update with your email
             linkedin: "https://www.linkedin.com/in/bhavy-patel23/", // TODO: Update with your LinkedIn URL
-            github: "https://github.com/bhavy2312"
+            github: "https://github.com/bhavypateldev"
         }
     },
     links: [
