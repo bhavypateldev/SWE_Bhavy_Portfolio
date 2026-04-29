@@ -1,7 +1,7 @@
 
 
 To visit portfolio: 
- https://bhavy2312.github.io/SWE_Bhavy_Portfolio/#contact
+ https://bhavypateldev.github.io/SWE_Bhavy_Portfolio/#
 
 # Portfolio Website
 
