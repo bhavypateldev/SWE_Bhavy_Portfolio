@@ -4,10 +4,12 @@ import Skills from './components/Skills';
 import Projects from './components/Projects';
 import Contact from './components/Contact';
 import LiquidBackground from './components/LiquidBackground';
+import SignatureIntro from './components/SignatureIntro';
 
 function App() {
   return (
     <div className="app">
+      <SignatureIntro />
       <LiquidBackground />
       <Header />
       <Hero />

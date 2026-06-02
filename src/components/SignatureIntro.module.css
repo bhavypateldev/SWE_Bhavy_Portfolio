@@ -1,0 +1,109 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background: var(--bg-color);
+  transition: background-color 0.3s ease;
+  overflow: hidden;
+}
+
+/* Subtle animated gradient orbs behind the signature */
+.overlay::before,
+.overlay::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.3;
+  animation: floatOrb 6s ease-in-out infinite alternate;
+}
+
+.overlay::before {
+  width: 500px;
+  height: 500px;
+  background: var(--blob-color-1);
+  top: -100px;
+  left: -100px;
+}
+
+.overlay::after {
+  width: 400px;
+  height: 400px;
+  background: var(--blob-color-3);
+  bottom: -80px;
+  right: -80px;
+  animation-delay: 3s;
+}
+
+@keyframes floatOrb {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(40px, 30px) scale(1.15); }
+}
+
+/* ---- Signature container ---- */
+.signatureContainer {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+/* Canvas wrapper — maintains the source image aspect ratio */
+.canvasWrapper {
+  position: relative;
+  width: min(80vw, 620px);
+}
+
+/* The drawing canvas */
+.signatureCanvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+
+  /* Light mode: white background blends away, black ink stays */
+  mix-blend-mode: multiply;
+}
+
+/* Dark mode: invert so strokes become white, screen blend removes black */
+[data-theme='dark'] .signatureCanvas {
+  filter: invert(1);
+  mix-blend-mode: screen;
+}
+
+/* ---- Tagline underneath ---- */
+.tagline {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 300;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--text-color);
+  opacity: 0;
+  margin-top: 24px;
+  transition: opacity 0.8s ease;
+}
+
+.taglineVisible {
+  opacity: 0.5;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 600px) {
+  .canvasWrapper {
+    width: 92vw;
+  }
+
+  .tagline {
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+  }
+}
