@@ -54,27 +54,37 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0;
 }
 
-/* Canvas wrapper — maintains the source image aspect ratio */
-.canvasWrapper {
+/* Frame maintains the source image aspect ratio (810×380) */
+.signatureFrame {
   position: relative;
   width: min(80vw, 620px);
+  aspect-ratio: 810 / 380;
 }
 
-/* The drawing canvas */
-.signatureCanvas {
+/* Each letter region is an absolutely positioned layer */
+.letterRegion {
+  position: absolute;
+  inset: 0;
+  will-change: opacity;
+}
+
+/* The signature image — repeated per region, browser caches it */
+.signatureImage {
   display: block;
   width: 100%;
   height: 100%;
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
 
-  /* Light mode: white background blends away, black ink stays */
+  /* Light mode: white bg blends away via multiply, black ink stays */
   mix-blend-mode: multiply;
 }
 
-/* Dark mode: invert so strokes become white, screen blend removes black */
-[data-theme='dark'] .signatureCanvas {
+/* Dark mode: invert strokes to white, screen blend removes the black */
+[data-theme='dark'] .signatureImage {
   filter: invert(1);
   mix-blend-mode: screen;
 }
@@ -98,7 +108,7 @@
 
 /* ---- Responsive ---- */
 @media (max-width: 600px) {
-  .canvasWrapper {
+  .signatureFrame {
     width: 92vw;
   }
 

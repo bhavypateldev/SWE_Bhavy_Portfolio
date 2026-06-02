@@ -1,258 +1,91 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from './SignatureIntro.module.css';
 
 /**
- * Stroke path segments traced over the actual signature image.
- * Coordinates are normalized 0–1 relative to image dimensions (810×380).
- * A round brush follows these paths to progressively reveal the real signature.
+ * Letter bounding regions traced over the actual signature image.
+ * Each region is a clip-path polygon that isolates one letter/stroke group.
+ * The signature image is displayed 8 times, each clipped to its letter region,
+ * and revealed sequentially with GPU-accelerated opacity animation.
+ *
+ * Coordinates are percentages of the image dimensions (810×380).
  */
-const STROKE_SEGMENTS = [
+const LETTER_REGIONS = [
   {
-    // "B" — dramatic diagonal upstroke from lower-left to upper-right
-    points: [
-      [0.105, 0.776], [0.140, 0.700], [0.175, 0.610],
-      [0.216, 0.500], [0.260, 0.380], [0.310, 0.260], [0.346, 0.179],
-    ],
-    duration: 420,
-    delay: 380,
-    brushSize: 0.075,
+    // "B" upstroke — the dramatic diagonal slash from lower-left to upper-right
+    name: 'B-slash',
+    clipPath: 'polygon(0% 95%, 0% 68%, 12% 50%, 30% 12%, 42% 0%, 48% 0%, 36% 15%, 16% 55%, 14% 70%, 6% 95%)',
+    start: 0.4,
+    dur: 0.35,
   },
   {
-    // "B" body — top curve sweeps back left-down forming the B letterform
-    points: [
-      [0.346, 0.179], [0.358, 0.163], [0.350, 0.200],
-      [0.330, 0.270], [0.300, 0.360], [0.265, 0.440],
-      [0.235, 0.520], [0.222, 0.560], [0.216, 0.585],
-      [0.230, 0.575], [0.250, 0.553], [0.268, 0.530],
-    ],
-    duration: 580,
-    delay: 0,
-    brushSize: 0.065,
+    // "B" body — the curves after the peak, forming the B letterform
+    name: 'B-body',
+    clipPath: 'polygon(14% 5%, 38% 5%, 38% 66%, 14% 66%)',
+    start: 0.70,
+    dur: 0.35,
   },
   {
-    // "h" — upstroke to peak, back down, arch right
-    points: [
-      [0.268, 0.530], [0.278, 0.487], [0.286, 0.420],
-      [0.294, 0.360], [0.296, 0.400], [0.300, 0.460],
-      [0.310, 0.510], [0.325, 0.530], [0.340, 0.515],
-    ],
-    duration: 420,
-    delay: 0,
-    brushSize: 0.058,
+    // "h" — upstroke and arch
+    name: 'h',
+    clipPath: 'polygon(24% 26%, 40% 26%, 40% 60%, 24% 60%)',
+    start: 1.0,
+    dur: 0.25,
   },
   {
-    // "a" — small compact loop
-    points: [
-      [0.340, 0.515], [0.350, 0.480], [0.365, 0.455],
-      [0.383, 0.460], [0.390, 0.500], [0.380, 0.530],
-      [0.365, 0.525], [0.370, 0.490], [0.390, 0.500],
-    ],
-    duration: 350,
-    delay: 0,
-    brushSize: 0.055,
+    // "a" — compact rounded letter
+    name: 'a',
+    clipPath: 'polygon(33% 38%, 46% 38%, 46% 60%, 33% 60%)',
+    start: 1.20,
+    dur: 0.20,
   },
   {
-    // "v" — sharp downward then up
-    points: [
-      [0.390, 0.500], [0.405, 0.455], [0.420, 0.430],
-      [0.428, 0.445], [0.432, 0.475],
-    ],
-    duration: 230,
-    delay: 0,
-    brushSize: 0.055,
+    // "vy" + y-descender — sharp v into y with the long tail
+    name: 'vy-tail',
+    clipPath: 'polygon(37% 33%, 54% 33%, 54% 92%, 37% 92%)',
+    start: 1.35,
+    dur: 0.45,
   },
   {
-    // "y" — down-stroke with long descending tail and loop back up
-    points: [
-      [0.432, 0.475], [0.440, 0.430], [0.447, 0.405],
-      [0.452, 0.440], [0.456, 0.510], [0.460, 0.590],
-      [0.464, 0.680], [0.462, 0.760], [0.452, 0.810],
-      [0.435, 0.825], [0.420, 0.810], [0.405, 0.770],
-    ],
-    duration: 520,
-    delay: 0,
-    brushSize: 0.060,
-  },
-  {
-    // Underline swoosh — sweeps left to right under "Bhavy"
-    points: [
-      [0.080, 0.745], [0.140, 0.770], [0.210, 0.790],
-      [0.290, 0.780], [0.370, 0.760], [0.430, 0.745],
-      [0.500, 0.745],
-    ],
-    duration: 320,
-    delay: 100,
-    brushSize: 0.048,
+    // Underline swoosh — horizontal stroke under "Bhavy"
+    name: 'underline',
+    clipPath: 'polygon(0% 65%, 56% 65%, 56% 92%, 0% 92%)',
+    start: 1.75,
+    dur: 0.25,
   },
   {
     // "P" — upstroke of Patel
-    points: [
-      [0.550, 0.640], [0.560, 0.560], [0.572, 0.470],
-      [0.585, 0.380], [0.598, 0.300], [0.607, 0.260],
-      [0.610, 0.280],
-    ],
-    duration: 380,
-    delay: 140,
-    brushSize: 0.060,
+    name: 'P',
+    clipPath: 'polygon(52% 16%, 67% 16%, 67% 70%, 52% 70%)',
+    start: 2.10,
+    dur: 0.30,
   },
   {
     // "atel" + finishing rightward flourish
-    points: [
-      [0.610, 0.280], [0.608, 0.350], [0.605, 0.430],
-      [0.606, 0.500], [0.615, 0.535], [0.635, 0.510],
-      [0.655, 0.480], [0.678, 0.455], [0.700, 0.450],
-      [0.715, 0.460], [0.730, 0.440], [0.760, 0.400],
-      [0.800, 0.360], [0.845, 0.325], [0.885, 0.308],
-      [0.915, 0.310],
-    ],
-    duration: 580,
-    delay: 0,
-    brushSize: 0.058,
+    name: 'atel-flourish',
+    clipPath: 'polygon(57% 14%, 100% 14%, 100% 62%, 57% 62%)',
+    start: 2.30,
+    dur: 0.40,
   },
 ];
 
-// ── Build a flat timeline of interpolated brush points with timestamps ──
-
-interface BrushPoint {
-  x: number;
-  y: number;
-  r: number;
-  t: number; // timestamp in ms
-}
-
-function buildTimeline(): { points: BrushPoint[]; totalDuration: number } {
-  const points: BrushPoint[] = [];
-  let clock = 0;
-
-  for (const seg of STROKE_SEGMENTS) {
-    clock += seg.delay;
-    const t0 = clock;
-    const pts = seg.points;
-
-    for (let i = 0; i < pts.length - 1; i++) {
-      const [x1, y1] = pts[i];
-      const [x2, y2] = pts[i + 1];
-      const dx = x2 - x1;
-      const dy = y2 - y1;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      // Place a brush stamp roughly every 0.3% of canvas width
-      const steps = Math.max(1, Math.ceil(dist / 0.003));
-
-      for (let s = 0; s <= steps; s++) {
-        const frac = s / steps;
-        const segProgress = (i + frac) / (pts.length - 1);
-        points.push({
-          x: x1 + dx * frac,
-          y: y1 + dy * frac,
-          r: seg.brushSize * 0.5,
-          t: t0 + segProgress * seg.duration,
-        });
-      }
-    }
-
-    clock += seg.duration;
-  }
-
-  return { points, totalDuration: clock };
-}
-
-// ── Component ───────────────────────────────────────────────────────────
-
-const IMG_ASPECT = 810 / 380; // source image aspect ratio
+const TAGLINE_DELAY = 2500; // ms — show tagline near end of drawing
+const DISMISS_DELAY = 3500; // ms — dismiss the overlay
 
 const SignatureIntro: React.FC = () => {
   const [isVisible, setIsVisible] = useState(true);
   const [showTagline, setShowTagline] = useState(false);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const { points, totalDuration } = buildTimeline();
-
-    // Load the real signature image
-    const img = new Image();
-    img.src = `${import.meta.env.BASE_URL}signature.png`;
-
-    let animId = 0;
-    let delayId = 0;
-    let cancelled = false;
-
-    img.onload = () => {
-      if (cancelled) return;
-
-      // ── Size the canvas at device-pixel resolution ──
-      const rect = canvas.getBoundingClientRect();
-      const dpr = window.devicePixelRatio || 1;
-      const w = Math.round(rect.width * dpr);
-      const h = Math.round(rect.height * dpr);
-      canvas.width = w;
-      canvas.height = h;
-
-      const ctx = canvas.getContext('2d')!;
-
-      // Off-screen mask canvas (accumulates white brush strokes)
-      const mask = document.createElement('canvas');
-      mask.width = w;
-      mask.height = h;
-      const mctx = mask.getContext('2d')!;
-      mctx.fillStyle = '#fff';
-
-      let cursor = 0; // next un-drawn point index
-
-      delayId = window.setTimeout(() => {
-        const t0 = performance.now();
-
-        const frame = (now: number) => {
-          if (cancelled) return;
-          const elapsed = now - t0;
-
-          // Stamp new brush circles on the mask
-          while (cursor < points.length && points[cursor].t <= elapsed) {
-            const p = points[cursor];
-            const cx = p.x * w;
-            const cy = p.y * h;
-            const r = p.r * w;
-            mctx.beginPath();
-            mctx.arc(cx, cy, r, 0, Math.PI * 2);
-            mctx.fill();
-            cursor++;
-          }
-
-          // Composite: show image only where mask is white
-          ctx.clearRect(0, 0, w, h);
-          ctx.globalCompositeOperation = 'source-over';
-          ctx.drawImage(mask, 0, 0);
-          ctx.globalCompositeOperation = 'source-in';
-          ctx.drawImage(img, 0, 0, w, h);
-          ctx.globalCompositeOperation = 'source-over';
-
-          if (elapsed < totalDuration) {
-            animId = requestAnimationFrame(frame);
-          } else {
-            setShowTagline(true);
-          }
-        };
-
-        animId = requestAnimationFrame(frame);
-      }, 400); // small pause before drawing starts
-    };
-
+    const taglineTimer = setTimeout(() => setShowTagline(true), TAGLINE_DELAY);
+    const dismissTimer = setTimeout(() => setIsVisible(false), DISMISS_DELAY);
     return () => {
-      cancelled = true;
-      cancelAnimationFrame(animId);
-      clearTimeout(delayId);
+      clearTimeout(taglineTimer);
+      clearTimeout(dismissTimer);
     };
   }, []);
 
-  // Dismiss the overlay after the tagline appears
-  useEffect(() => {
-    if (!showTagline) return;
-    const id = window.setTimeout(() => setIsVisible(false), 850);
-    return () => clearTimeout(id);
-  }, [showTagline]);
+  const signatureUrl = `${import.meta.env.BASE_URL}signature.png`;
 
   return (
     <AnimatePresence>
@@ -269,22 +102,32 @@ const SignatureIntro: React.FC = () => {
           key="signature-intro"
         >
           <div className={styles.signatureContainer}>
-            <div
-              className={styles.canvasWrapper}
-              style={{ aspectRatio: IMG_ASPECT }}
-            >
-              <canvas
-                ref={canvasRef}
-                className={styles.signatureCanvas}
-                aria-label="Bhavy Patel handwritten signature"
-                role="img"
-              />
+            <div className={styles.signatureFrame}>
+              {LETTER_REGIONS.map((region) => (
+                <motion.div
+                  key={region.name}
+                  className={styles.letterRegion}
+                  style={{ clipPath: region.clipPath }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{
+                    delay: region.start,
+                    duration: region.dur,
+                    ease: 'easeOut',
+                  }}
+                >
+                  <img
+                    src={signatureUrl}
+                    alt=""
+                    className={styles.signatureImage}
+                    draggable={false}
+                  />
+                </motion.div>
+              ))}
             </div>
 
             <span
-              className={`${styles.tagline} ${
-                showTagline ? styles.taglineVisible : ''
-              }`}
+              className={`${styles.tagline} ${showTagline ? styles.taglineVisible : ''}`}
             >
               Software Engineer
             </span>
