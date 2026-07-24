@@ -36,6 +36,12 @@ export const portfolioData = {
     ],
     projects: [
         {
+            title: "AI Music Recommender Simulation",
+            description: "A content-based music recommender system that scores songs using weighted proximity formulas across 12 audio features and 15 genres. Simulates how platforms like Spotify generate personalized playlists from user taste profiles.",
+            tech: ["Python", "AI/ML", "Content-Based Filtering", "Data Analysis"],
+            link: "https://github.com/bhavypateldev/ai110-module3show-musicrecommendersimulation-starter"
+        },
+        {
             title: "Secure E-Commerce Platform",
             description: "A full-stack e-commerce app with implemented security best practices, including JWT authentication, input sanitization, and secure payment processing.",
             tech: ["React", "Node.js", "MongoDB", "OAuth 2.0"],
