@@ -5,8 +5,11 @@ import Projects from './components/Projects';
 import Contact from './components/Contact';
 import LiquidBackground from './components/LiquidBackground';
 import SignatureIntro from './components/SignatureIntro';
+import { useSmoothScroll } from './hooks/useSmoothScroll';
 
 function App() {
+  useSmoothScroll();
+
   return (
     <div className="app">
       <SignatureIntro />
