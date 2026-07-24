@@ -24,22 +24,82 @@
 
 .projectCard {
     background: var(--glass-bg);
-    /* Glass background */
     backdrop-filter: blur(8px);
     border: 1px solid var(--glass-border);
     border-radius: 12px;
     padding: clamp(1.5rem, 3vw, 2rem);
-    transition: all 0.3s ease;
+    transition: box-shadow 0.35s ease, border-color 0.35s ease, background 0.35s ease;
     display: flex;
     flex-direction: column;
     height: 100%;
+    position: relative;
+    overflow: hidden;
+    will-change: transform;
+}
+
+.projectCard::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.06) 0%, rgba(236, 72, 153, 0.06) 100%);
+    pointer-events: none;
+}
+
+.projectCard:hover::before {
+    opacity: 1;
 }
 
 .projectCard:hover {
-    transform: translateY(-5px);
     box-shadow: var(--glass-shadow);
     border-color: var(--border-color);
     background: var(--card-bg);
+}
+
+/* Featured card — first project gets a subtle accent border */
+.featured {
+    border-color: rgba(139, 92, 246, 0.3);
+}
+
+.featured:hover {
+    border-color: rgba(139, 92, 246, 0.5);
+    box-shadow: 0 8px 40px rgba(139, 92, 246, 0.1), var(--glass-shadow);
+}
+
+.featuredBadge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #8b5cf6, #ec4899);
+    color: #fff;
+    line-height: 1;
+}
+
+.cardTop {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    gap: 0.5rem;
+}
+
+.linkIcon {
+    opacity: 0.4;
+    flex-shrink: 0;
+    margin-top: 0.15rem;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.projectCard:hover .linkIcon {
+    opacity: 0.8;
+    transform: translate(2px, -2px);
 }
 
 .projectTitle {
@@ -74,6 +134,28 @@
     border-radius: 999px;
     color: var(--text-color);
     font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.projectCard:hover .techTag {
+    background-color: var(--border-color);
+}
+
+.viewRepo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-top: 1.25rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-color);
+    opacity: 0.6;
+    transition: opacity 0.25s ease, gap 0.25s ease;
+}
+
+.projectCard:hover .viewRepo {
+    opacity: 1;
+    gap: 0.5rem;
 }
 
 @media (max-width: 480px) {
