@@ -3,12 +3,11 @@ export const portfolioData = {
         name: "Hey! I am Bhavy",
         role: "Software Engineer & Security Analyst",
         bio: [
-            "Information Systems Technology student",
-            "passionate about building full-stack",
-            "applications and data-driven systems, with a",
-            "strong focus on performance, reliability, and security."
+            "Computer Science student at Cal State Fullerton focused on",
+            "building scalable software and secure systems through full-stack",
+            "development and cybersecurity."
         ],
-        about: "I am a Computer Science student passionate about the intersection of Software Engineering and Cybersecurity. My expertise lies in building secure full-stack applications, vulnerability assessment, and algorithm optimization. I strive to develop robust software that stands up to modern security challenges.",
+        about: "Computer Science student at Cal State Fullerton focused on building scalable software and secure systems through full-stack development and cybersecurity. Experienced with vulnerability assessment, algorithm optimization, and delivering reliable software solutions.",
         contact: {
             email: "bhavypatel1223@gmail.com", // TODO: Update with your email
             linkedin: "https://www.linkedin.com/in/bhavy-patel23/", // TODO: Update with your LinkedIn URL
