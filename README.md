@@ -1,6 +1,6 @@
 
 
-To visit portfolio: 
+Portfolio: 
  https://bhavypateldev.github.io/SWE_Bhavy_Portfolio/#
 
 # Portfolio Website
